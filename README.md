@@ -1,17 +1,7 @@
 # 🌐 Procedural World Intelligence System (PWIS)
 
 > An advanced AI-powered procedural world generation and real-time intelligence simulation system built with React, Vite, Three.js, and Framer Motion.
- <div align="center">
-<img src="home.png" width="800"/>
-<br/><br/>
-<img src="data.png" width="800"/>
-<br/><br/>
-<img src="neural.png" width="800"/>
-<br/><br/>
-<img src="corrupted.png" width="800"/>
-<br/><br/>
-<img src="cryatal.png" width="800"/>
-</div>
+
 ---
 
 ## ✨ Features
@@ -25,7 +15,7 @@
 - **Seed Control** — Enter any seed or choose from presets to recreate worlds
 - **System Metrics** — Live monitoring of processing load, memory usage, stability, and corruption level
 - **Cyberpunk UI** — Orbitron + JetBrains Mono fonts, scan lines, glow effects, animated indicators
-
+<img src="home.png" width="800"/>
 ---
 
 ## 🚀 Quick Start
@@ -103,7 +93,7 @@ procedural-world-intelligence-system/
 | Plasma Peaks | `#f59e0b` | 5000°C | Volcanic mountains of raw energy |
 | Quantum Meadow | `#34d399` | 18°C | Fields where reality exists in superposition |
 | Corrupted Zone | `#ef4444` | 0°C | Regions where the simulation has broken down |
-
+<img src="cryatal.png" width="800"/>
 ---
 
 ## 🤖 Entity Types
@@ -116,7 +106,7 @@ procedural-world-intelligence-system/
 | Predator | Apex Hunter | 0.70 | 0.90 | 0.90 |
 | Oracle | Prediction Engine | 1.00 | 0.10 | 0.00 |
 | Nexus | Hub Intelligence | 0.90 | 0.20 | 0.10 |
-
+<img src="corrupted.png" width="800"/>
 ---
 
 ## 🎮 How to Use
@@ -128,7 +118,7 @@ procedural-world-intelligence-system/
 5. **Filter by Biome** — Use the biome filter buttons above the map
 6. **Use Preset Worlds** — Click preset buttons like `GENESIS`, `CHAOS`, `EDEN` for curated worlds
 7. **Monitor Events** — Watch the event log for world events in real-time
-
+<img src="neural.png" width="800"/>
 ---
 
 ## 🛠 Tech Stack
@@ -141,7 +131,7 @@ procedural-world-intelligence-system/
 | Tailwind CSS | 3.4.x | Utility-first CSS |
 | Three.js | 0.160.x | 3D graphics (available for extensions) |
 | Axios | 1.6.x | HTTP client (available for API extensions) |
-
+<img src="data.png" width="800"/>
 ---
 
 ## 🔧 Configuration
