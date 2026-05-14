@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PWIS — Procedural World Intelligence System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#020408;--bg1:#0a1628;--bg2:#0f1e35;
+  --pulse:#00d4ff;--syn:#7c3aed;--dat:#10b981;--warn:#f59e0b;--danger:#ef4444;--pur:#a855f7;
+  --text1:#e2e8f0;--text2:rgba(226,232,240,0.55);--text3:rgba(226,232,240,0.28);
+  --border:rgba(0,212,255,0.13);--border2:rgba(0,212,255,0.28);
+}
+html,body{background:var(--bg0);color:var(--text1);font-family:'JetBrains Mono',monospace;height:100%;overflow:hidden}
+body{background-image:linear-gradient(rgba(0,212,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.03) 1px,transparent 1px);background-size:36px 36px;}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--pulse);border-radius:2px}
+#app{display:flex;flex-direction:column;height:100vh}
+#header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:rgba(2,4,8,0.92);backdrop-filter:blur(12px);z-index:10;flex-shrink:0}
+#main{display:grid;grid-template-columns:220px 1fr 220px;gap:10px;padding:10px;flex:1;overflow:hidden;min-height:0}
+#left,#right{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+#center{display:flex;flex-direction:column;gap:8px;overflow:hidden}
+#footer{padding:6px 16px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-shrink:0}
+.panel{background:rgba(10,22,40,0.82);border:1px solid var(--border);border-radius:3px;padding:12px;position:relative;backdrop-filter:blur(8px)}
+.panel::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,var(--pulse),transparent);opacity:0.5}
+.panel-title{font-family:'Orbitron',monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.dot{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+.dot-pulse{background:var(--pulse);box-shadow:0 0 6px var(--pulse);animation:blink 2s infinite}
+.dot-green{background:var(--dat);box-shadow:0 0 6px var(--dat);animation:blink 2s infinite}
+.dot-warn{background:var(--warn);box-shadow:0 0 6px var(--warn)}
+.dot-syn{background:var(--syn);box-shadow:0 0 6px var(--syn);animation:blink 3s infinite}
+.dot-pur{background:var(--pur);box-shadow:0 0 5px var(--pur);animation:blink 2.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.4}}
+.logo-box{display:flex;align-items:center;gap:10px}
+.logo-diamond{width:28px;height:28px;border:2px solid var(--pulse);transform:rotate(45deg);position:relative;animation:spin-diamond 6s linear infinite}
+.logo-diamond::after{content:'';position:absolute;inset:5px;background:var(--pulse);opacity:0.25}
+@keyframes spin-diamond{0%{transform:rotate(45deg)}50%{transform:rotate(90deg)}100%{transform:rotate(45deg)}}
+.logo-text{font-family:'Orbitron',monospace;color:var(--pulse);font-size:14px;font-weight:700;letter-spacing:3px;text-shadow:0 0 16px rgba(0,212,255,0.7)}
+.logo-sub{font-size:8px;color:rgba(0,212,255,0.45);letter-spacing:2px;margin-top:2px}
+.hdr-center{display:flex;gap:16px;font-size:9px;color:var(--text2);letter-spacing:2px}
+.hdr-val{color:var(--pulse)}
+.hdr-sep{color:var(--text3)}
+.hdr-btns{display:flex;gap:8px}
+.btn{background:transparent;border:1px solid var(--pulse);color:var(--pulse);font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 14px;cursor:pointer;transition:all 0.25s;border-radius:2px}
+.btn:hover{background:var(--pulse);color:var(--bg0)}
+.btn-purple{border-color:var(--syn);color:var(--syn)}
+.btn-purple:hover{background:var(--syn);color:#fff}
+.pbar{height:3px;background:rgba(0,212,255,0.1);border-radius:2px;overflow:hidden;margin-top:3px}
+.pfill{height:100%;border-radius:2px;transition:width 0.6s ease}
+.stat-row{margin-bottom:10px}
+.stat-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--text2);letter-spacing:1px;text-transform:uppercase;margin-bottom:3px}
+.stat-val{font-size:10px;font-weight:700}
+.metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px}
+.metric-box{background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.1);border-radius:3px;padding:7px;text-align:center}
+.metric-num{font-size:14px;font-weight:700;color:var(--pulse)}
+.metric-lbl{font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+#sector-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:6px;overflow-y:auto;flex:1;padding-right:2px}
+.sector{background:rgba(10,22,40,0.7);border:1px solid rgba(0,212,255,0.1);border-radius:3px;padding:8px;cursor:pointer;transition:all 0.2s;position:relative}
+.sector:hover{border-color:rgba(0,212,255,0.35);background:rgba(0,212,255,0.05)}
+.sector.selected{border-color:var(--pulse);background:rgba(0,212,255,0.08)}
+.sector.selected::after{content:'';position:absolute;inset:0;border:1px solid var(--pulse);border-radius:3px;animation:sel-pulse 1.5s infinite;pointer-events:none}
+@keyframes sel-pulse{0%,100%{opacity:0.5}50%{opacity:1}}
+.sec-sym{font-size:16px;line-height:1}
+.sec-name{font-size:9px;font-weight:700;color:var(--text1);margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sec-biome{font-size:7px;letter-spacing:1.5px;text-transform:uppercase;margin-top:1px}
+.sec-dots{display:flex;gap:3px;margin-top:5px;flex-wrap:wrap}
+.ent-dot{width:5px;height:5px;border-radius:50%}
+.sec-stability{font-size:7px;color:var(--text3);margin-top:4px}
+.detail-empty{display:flex;align-items:center;justify-content:center;flex:1;text-align:center;color:var(--text3);font-size:9px;letter-spacing:2px;flex-direction:column;gap:8px}
+.detail-empty .big-sym{font-size:32px;opacity:0.15}
+.region-info{overflow-y:auto;flex:1}
+.info-badge{font-size:8px;padding:3px 8px;border-radius:2px;border:1px solid;display:inline-block;margin-right:4px;margin-bottom:4px;letter-spacing:1px;text-transform:uppercase}
+.entity-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)}
+.ent-info{flex:1;min-width:0}
+.ent-name{font-size:9px;color:var(--text1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ent-role{font-size:7px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.mini-bar{width:30px;height:2px;background:rgba(255,255,255,0.1);border-radius:1px;overflow:hidden}
+.mini-fill{height:100%;border-radius:1px}
+.event-list{overflow-y:auto;max-height:140px;display:flex;flex-direction:column;gap:4px}
+.evt{padding:5px 7px;border-radius:2px;border-left:2px solid;font-size:8px;line-height:1.5}
+.evt-msg{color:var(--text1)}
+.evt-meta{color:var(--text3);letter-spacing:1px;text-transform:uppercase;font-size:7px;margin-top:2px}
+.evt-crit{border-color:var(--danger);background:rgba(239,68,68,0.06)}
+.evt-warn{border-color:var(--warn);background:rgba(245,158,11,0.06)}
+.evt-info{border-color:var(--pulse);background:rgba(0,212,255,0.04)}
+.evt-ok{border-color:var(--dat);background:rgba(16,185,129,0.04)}
+.seed-display{background:rgba(0,212,255,0.05);border:1px solid rgba(0,212,255,0.18);border-radius:3px;padding:8px;text-align:center;margin-bottom:8px}
+.seed-num{font-size:16px;font-weight:700;color:var(--pulse);letter-spacing:3px;text-shadow:0 0 12px rgba(0,212,255,0.6)}
+.seed-lbl{font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.seed-input{width:100%;background:rgba(0,212,255,0.04);border:1px solid rgba(0,212,255,0.18);color:var(--pulse);font-family:'JetBrains Mono',monospace;font-size:10px;padding:5px 8px;border-radius:2px;outline:none;margin-bottom:6px}
+.seed-input::placeholder{color:rgba(0,212,255,0.25)}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px}
+.preset-btn{font-size:7px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:4px 2px;border:1px solid rgba(255,255,255,0.1);color:var(--text2);background:transparent;cursor:pointer;border-radius:2px;transition:all 0.2s;text-align:center}
+.preset-btn:hover,.preset-btn.active{border-color:var(--syn);color:var(--syn);background:rgba(124,58,237,0.1)}
+.speed-btns{display:flex;gap:4px}
+.speed-btn{flex:1;font-size:8px;font-family:'JetBrains Mono',monospace;padding:4px 2px;border:1px solid rgba(255,255,255,0.1);color:var(--text2);background:transparent;cursor:pointer;border-radius:2px;transition:all 0.2s;text-align:center}
+.speed-btn.active{border-color:var(--pulse);color:var(--pulse);background:rgba(0,212,255,0.1)}
+.biome-filters{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px}
+.bf-btn{font-size:7px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;padding:3px 7px;border:1px solid rgba(255,255,255,0.1);color:var(--text3);background:transparent;cursor:pointer;border-radius:2px;transition:all 0.2s}
+.bf-btn:hover{border-color:rgba(0,212,255,0.4)}
+.bf-btn.active{border-color:var(--pulse);color:var(--pulse);background:rgba(0,212,255,0.08)}
+#footer{font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase}
+.scanline-wrap{position:relative;overflow:hidden}
+.scanline-wrap::after{content:'';position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,212,255,0.25),transparent);animation:scanline 4s linear infinite;pointer-events:none}
+@keyframes scanline{0%{top:-2px}100%{top:100%}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div class="logo-box">
+      <div class="logo-diamond"></div>
+      <div>
+        <div class="logo-text">PWIS</div>
+        <div class="logo-sub">PROCEDURAL WORLD INTELLIGENCE SYSTEM</div>
+      </div>
+    </div>
+    <div class="hdr-center">
+      <span>STATUS <span class="hdr-val" id="h-status">STANDBY</span></span>
+      <span class="hdr-sep">|</span>
+      <span>TICK <span class="hdr-val" id="h-tick">000000</span></span>
+      <span class="hdr-sep">|</span>
+      <span>WORLD <span class="hdr-val" id="h-world">—</span></span>
+      <span class="hdr-sep">|</span>
+      <span>SEED <span class="hdr-val" id="h-seed">—</span></span>
+    </div>
+    <div class="hdr-btns">
+      <button class="btn" id="btn-run" onclick="toggleSim()">▶ RUN</button>
+      <button class="btn btn-purple" onclick="regenWorld()">⟳ REGENERATE</button>
+    </div>
+  </div>
+  <div id="main">
+    <div id="left">
+      <div class="panel">
+        <div class="panel-title"><span class="dot dot-pulse"></span><span style="color:var(--pulse)">System Metrics</span></div>
+        <div class="stat-row"><div class="stat-labels"><span>Processing Load</span><span class="stat-val" id="m-proc" style="color:var(--pulse)">—</span></div><div class="pbar"><div class="pfill" id="b-proc" style="background:var(--pulse);width:0%"></div></div></div>
+        <div class="stat-row"><div class="stat-labels"><span>Memory Usage</span><span class="stat-val" id="m-mem" style="color:var(--syn)">—</span></div><div class="pbar"><div class="pfill" id="b-mem" style="background:var(--syn);width:0%"></div></div></div>
+        <div class="stat-row"><div class="stat-labels"><span>World Stability</span><span class="stat-val" id="m-stab" style="color:var(--dat)">—</span></div><div class="pbar"><div class="pfill" id="b-stab" style="background:var(--dat);width:0%"></div></div></div>
+        <div class="stat-row"><div class="stat-labels"><span>Corruption</span><span class="stat-val" id="m-corr" style="color:var(--danger)">—</span></div><div class="pbar"><div class="pfill" id="b-corr" style="background:var(--danger);width:0%"></div></div></div>
+        <div class="metrics-grid">
+          <div class="metric-box"><div class="metric-num" id="mt-reg">—</div><div class="metric-lbl">Regions</div></div>
+          <div class="metric-box"><div class="metric-num" id="mt-ent">—</div><div class="metric-lbl">Entities</div></div>
+          <div class="metric-box"><div class="metric-num" id="mt-exp">—</div><div class="metric-lbl">Explored</div></div>
+          <div class="metric-box"><div class="metric-num" id="mt-lat">—</div><div class="metric-lbl">Latency</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot dot-pur"></span><span style="color:var(--pur)">Seed Control</span></div>
+        <div class="seed-display"><div class="seed-lbl">Active Seed</div><div class="seed-num" id="s-display">—</div></div>
+        <input class="seed-input" id="seed-input" type="number" placeholder="Enter seed number..." onkeydown="if(event.key==='Enter')loadSeed()"/>
+        <button class="btn" style="width:100%;margin-bottom:8px;font-size:8px" onclick="loadSeed()">LOAD SEED</button>
+        <div style="font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Preset Worlds</div>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="loadPreset(42069,'GENESIS')">GENESIS</button>
+          <button class="preset-btn" onclick="loadPreset(666999,'CHAOS')">CHAOS</button>
+          <button class="preset-btn" onclick="loadPreset(123456,'EDEN')">EDEN</button>
+          <button class="preset-btn" onclick="loadPreset(999000,'ABYSS')">ABYSS</button>
+          <button class="preset-btn" onclick="loadPreset(314159,'NEXUS')">NEXUS</button>
+          <button class="preset-btn" onclick="loadPreset(271828,'SIGMA')">SIGMA</button>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot dot-green"></span><span style="color:var(--dat)">Simulation Speed</span></div>
+        <div class="speed-btns">
+          <button class="speed-btn" onclick="setSpeed(0.25)">0.25x</button>
+          <button class="speed-btn" onclick="setSpeed(0.5)">0.5x</button>
+          <button class="speed-btn active" onclick="setSpeed(1)">1x</button>
+          <button class="speed-btn" onclick="setSpeed(2)">2x</button>
+          <button class="speed-btn" onclick="setSpeed(5)">5x</button>
+          <button class="speed-btn" onclick="setSpeed(10)">10x</button>
+        </div>
+      </div>
+    </div>
+    <div id="center">
+      <div class="panel" style="flex-shrink:0">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div class="panel-title" style="margin:0"><span class="dot dot-green"></span><span style="color:var(--dat)">World Map</span> <span style="color:var(--text3);font-size:8px;margin-left:8px" id="sector-count">— Sectors</span></div>
+        </div>
+        <div class="biome-filters" id="biome-filters"></div>
+      </div>
+      <div id="sector-grid"></div>
+    </div>
+    <div id="right">
+      <div class="panel scanline-wrap" style="flex:1;display:flex;flex-direction:column;min-height:0">
+        <div class="panel-title"><span class="dot dot-syn"></span><span style="color:var(--syn)">Sector Analysis</span></div>
+        <div id="detail-content" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+          <div class="detail-empty"><div class="big-sym">◌</div><div>SELECT A SECTOR<br>TO ANALYZE</div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-title"><span class="dot dot-warn"></span><span style="color:var(--warn)">Event Log</span><span style="margin-left:auto;font-size:7px;color:var(--text3)" id="evt-count">0 EVENTS</span></div>
+        <div class="event-list" id="event-list"></div>
+      </div>
+    </div>
+  </div>
+  <div id="footer">
+    <span>PWIS v1.0.0 · PROCEDURAL WORLD INTELLIGENCE SYSTEM</span>
+    <span id="f-tick">TICK: 000000</span>
+  </div>
+</div>
+<script>
+const RNG=(seed)=>{let s=seed%2147483647;if(s<=0)s+=2147483646;return{next(){s=(s*16807)%2147483647;return(s-1)/2147483646},int(a,b){return Math.floor(this.next()*(b-a+1))+a},flt(a,b){return this.next()*(b-a)+a},pick(arr){return arr[Math.floor(this.next()*arr.length)]}}};
+const BIOMES={VOID_EXPANSE:{name:"Void Expanse",sym:"◌",accent:"#00d4ff",desc:"Primordial emptiness between realities",resources:["dark_matter","quantum_foam"]},NEURAL_FOREST:{name:"Neural Forest",sym:"⋮",accent:"#10b981",desc:"Dense network of living data pathways",resources:["synaptic_fiber","memory_crystal","cognitive_resin"]},CRYSTAL_WASTES:{name:"Crystal Wastes",sym:"◇",accent:"#7c3aed",desc:"Frozen fields of computational mineral",resources:["quantum_crystal","temporal_shard"]},DATA_OCEAN:{name:"Data Ocean",sym:"≈",accent:"#00d4ff",desc:"Infinite sea of unprocessed information",resources:["raw_data","signal_ore","byte_coral"]},PLASMA_PEAKS:{name:"Plasma Peaks",sym:"▲",accent:"#f59e0b",desc:"Volcanic mountains of raw energy",resources:["fusion_core","plasma_vein"]},QUANTUM_MEADOW:{name:"Quantum Meadow",sym:"✦",accent:"#34d399",desc:"Fields where reality exists in superposition",resources:["probability_seed","quantum_bloom"]},CORRUPTED_ZONE:{name:"Corrupted Zone",sym:"✕",accent:"#ef4444",desc:"Regions where the simulation has broken down",resources:["error_fragment","null_ore","glitch_crystal"]}};
+const BIOME_KEYS=Object.keys(BIOMES);
+const ENTITIES={SENTINEL:{name:"Sentinel",role:"Guardian",color:"#00d4ff"},HARVESTER:{name:"Harvester",role:"Resource Collector",color:"#10b981"},ARCHITECT:{name:"Architect",role:"World Builder",color:"#7c3aed"},PREDATOR:{name:"Predator",role:"Apex Hunter",color:"#ef4444"},ORACLE:{name:"Oracle",role:"Prediction Engine",color:"#f59e0b"},NEXUS:{name:"Nexus",role:"Hub Intelligence",color:"#a855f7"}};
+const ENT_KEYS=Object.keys(ENTITIES);
+const BEHAVIORS=["PATROL","IDLE","HUNT","BUILD","HARVEST","SCAN"];
+const EVT_TYPES=[{t:"ANOMALY_DETECTED",sev:"WARN",cls:"evt-warn",msgs:["Unclassified energy signature at","Dimensional fluctuation in","Unknown pattern in"]},{t:"ENTITY_CONFLICT",sev:"CRIT",cls:"evt-crit",msgs:["Hostile engagement in","Territory dispute at","Combat initiated in"]},{t:"RESOURCE_SURGE",sev:"INFO",cls:"evt-info",msgs:["Resource yield +340% at","Rare vein discovered in","Extraction optimal in"]},{t:"CORRUPTION_SPREAD",sev:"CRIT",cls:"evt-crit",msgs:["Error cascade in","Null zone growing at","Data corruption critical in"]},{t:"STABILITY_RESTORED",sev:"OK",cls:"evt-ok",msgs:["Stability normalized at","Integrity check passed for","Patch deployed to"]},{t:"ENTITY_EVOLVED",sev:"INFO",cls:"evt-info",msgs:["Evolution event in","Upgrade complete at","Cognitive expansion in"]},{t:"REALITY_BREACH",sev:"CRIT",cls:"evt-crit",msgs:["CRITICAL: Reality tear at","EMERGENCY: Boundary failure in","ALERT: Collapse imminent at"]},{t:"NEW_PATHWAY",sev:"INFO",cls:"evt-info",msgs:["Wormhole formed at","New conduit at","Portal activated in"]}];
+const WORLD_NAMES=["NEXUS","QUANTUM","SIGMA","OMEGA","ALPHA","DELTA","VOID","PRIME","ECHO","CIPHER","MATRIX","AXIOM","CORTEX","HELIX"];
+const WORLD_SUFF=["PRIME","ZERO","ABSOLUTE","EPOCH","INFINITE","CORE","DEEP","BEYOND","ULTRA","TERMINUS"];
+let world=null,tick=0,running=false,simInterval=null,simSpeed=1,selectedSector=null,biomeFilter="ALL";
+function rndSeed(){return Math.floor(Math.random()*999999)+1}
+function fmtPct(v){return Math.round(v*100)+'%'}
+function fmtTick(t){return String(t).padStart(6,'0')}
+function generateWorld(seed){
+  const rng=RNG(seed);const size=rng.int(10,16);const regions=[];
+  for(let i=0;i<size;i++){
+    const bk=rng.pick(BIOME_KEYS);const bm=BIOMES[bk];const eCnt=rng.int(2,7);const entities=[];
+    for(let j=0;j<eCnt;j++){const ek=rng.pick(ENT_KEYS);entities.push({id:`e${i}_${j}`,type:ek,name:`${ENTITIES[ek].name}-${String.fromCharCode(65+j)}`,health:rng.flt(0.3,1),energy:rng.flt(0.2,1),x:rng.flt(0,100),y:rng.flt(0,100),active:rng.next()>0.2,behavior:rng.pick(BEHAVIORS)});}
+    const rCnt=rng.int(2,4);const resources=[];
+    for(let k=0;k<rCnt;k++)resources.push({type:rng.pick(bm.resources),amount:rng.flt(0.1,1),rate:rng.flt(0.01,0.1)});
+    regions.push({id:`r${i}`,name:`Sector ${String.fromCharCode(65+(i%26))}-${Math.floor(i/26)+1}`,biome:bk,entities,resources,stability:Math.min(1,Math.max(0,bk==='CORRUPTED_ZONE'?rng.flt(0.05,0.25):rng.flt(0.3,0.95))),discovered:rng.next()>0.35,threat:rng.flt(0,1),coords:{x:rng.int(0,999),y:rng.int(0,999),z:rng.int(0,99)}});
+  }
+  const totalEnt=regions.reduce((a,r)=>a+r.entities.length,0);const avgStab=regions.reduce((a,r)=>a+r.stability,0)/regions.length;const discov=regions.filter(r=>r.discovered).length;
+  const evts=[];for(let i=0;i<rng.int(6,14);i++){const ed=rng.pick(EVT_TYPES);const reg=rng.pick(regions);evts.push({id:`ev${i}`,type:ed.t,sev:ed.sev,cls:ed.cls,msg:`${rng.pick(ed.msgs)} ${reg.name}`,ts:Date.now()-rng.int(0,3500000)});}evts.sort((a,b)=>b.ts-a.ts);
+  return{seed,name:`${rng.pick(WORLD_NAMES)}-${rng.pick(WORLD_SUFF)}-${rng.int(100,9999)}`,regions,events:evts,stats:{totalRegions:size,totalEntities:totalEnt,discovered:discov,processingLoad:rng.flt(0.4,0.95),memoryUsage:rng.flt(0.3,0.88),avgStability:avgStab,corruptionLevel:rng.flt(0.05,0.35),latency:rng.int(2,120)}};
+}
+function setVal(id,v){const el=document.getElementById(id);if(el)el.textContent=v}
+function setW(id,pct){const el=document.getElementById(id);if(el)el.style.width=pct+'%'}
+function stabColor(s){return s>0.65?'var(--dat)':s>0.35?'var(--warn)':'var(--danger)'}
+function fmtPctV(v){return Math.round(v*100)+'%'}
+function renderMetrics(){
+  if(!world)return;const s=world.stats;const stab=world.regions.reduce((a,r)=>a+r.stability,0)/world.regions.length;
+  setVal('m-proc',fmtPctV(s.processingLoad));setW('b-proc',s.processingLoad*100);setVal('m-mem',fmtPctV(s.memoryUsage));setW('b-mem',s.memoryUsage*100);
+  setVal('m-stab',fmtPctV(stab));setW('b-stab',stab*100);const cb=document.getElementById('b-stab');if(cb)cb.style.background=stabColor(stab);
+  setVal('m-corr',fmtPctV(s.corruptionLevel));setW('b-corr',s.corruptionLevel*100);setVal('mt-reg',s.totalRegions);setVal('mt-ent',s.totalEntities);setVal('mt-exp',`${s.discovered}/${s.totalRegions}`);setVal('mt-lat',`${s.latency}ms`);
+  setVal('h-world',world.name.length>18?world.name.slice(0,18)+'…':world.name);setVal('h-seed',world.seed);setVal('s-display',world.seed);
+}
+function renderBiomeFilters(){
+  const biomes=['ALL',...new Set(world.regions.map(r=>r.biome))];
+  document.getElementById('biome-filters').innerHTML=biomes.map(b=>{const label=b==='ALL'?'ALL':BIOMES[b].name.split(' ')[0];const active=biomeFilter===b?'active':'';return`<button class="bf-btn ${active}" onclick="filterBiome('${b}')">${label}</button>`;}).join('');
+}
+function filterBiome(b){biomeFilter=b;renderBiomeFilters();renderSectors();}
+function renderSectors(){
+  if(!world)return;const regs=biomeFilter==='ALL'?world.regions:world.regions.filter(r=>r.biome===biomeFilter);setVal('sector-count',`${regs.length} SECTORS`);
+  document.getElementById('sector-grid').innerHTML=regs.map(r=>{const bm=BIOMES[r.biome];const sel=selectedSector&&selectedSector.id===r.id?'selected':'';const dots=r.entities.slice(0,6).map(e=>`<div class="ent-dot" style="background:${ENTITIES[e.type]?.color||'#fff'};${e.active?`box-shadow:0 0 4px ${ENTITIES[e.type]?.color}`:'opacity:0.3'}"></div>`).join('');return`<div class="sector ${sel}" onclick="selectSector('${r.id}')"><div class="sec-sym" style="color:${bm.accent}">${bm.sym}</div><div class="sec-name">${r.name}</div><div class="sec-biome" style="color:${bm.accent}">${bm.name}</div><div class="sec-dots">${dots}${r.entities.length>6?`<span style="font-size:7px;color:var(--text3);margin-left:2px">+${r.entities.length-6}</span>`:''}</div><div class="pbar" style="margin-top:5px"><div class="pfill" style="width:${r.stability*100}%;background:${stabColor(r.stability)}"></div></div><div class="sec-stability">${Math.round(r.stability*100)}% stable${r.threat>0.7?' · ⚠ HOSTILE':''}</div></div>`;}).join('');
+}
+function selectSector(id){selectedSector=world?world.regions.find(r=>r.id===id):null;renderSectors();renderDetail();}
+function renderDetail(){
+  const c=document.getElementById('detail-content');if(!selectedSector){c.innerHTML='<div class="detail-empty"><div class="big-sym">◌</div><div>SELECT A SECTOR<br>TO ANALYZE</div></div>';return;}
+  const r=selectedSector;const bm=BIOMES[r.biome];
+  const ents=r.entities.map(e=>{const et=ENTITIES[e.type];if(!et)return'';return`<div class="entity-row"><div class="ent-dot" style="background:${et.color};${e.active?`box-shadow:0 0 5px ${et.color}`:'opacity:0.3'};width:7px;height:7px;flex-shrink:0"></div><div class="ent-info"><div class="ent-name">${e.name}</div><div class="ent-role">${et.role} · ${e.behavior}</div></div><div style="display:flex;gap:5px;flex-shrink:0"><div><div style="font-size:6px;color:var(--text3)">HP</div><div class="mini-bar"><div class="mini-fill" style="width:${e.health*100}%;background:${e.health>0.5?'var(--dat)':e.health>0.25?'var(--warn)':'var(--danger)'}"></div></div></div><div><div style="font-size:6px;color:var(--text3)">EN</div><div class="mini-bar"><div class="mini-fill" style="width:${e.energy*100}%;background:var(--pulse)"></div></div></div></div></div>`;}).join('');
+  const res=r.resources.map(rs=>`<span class="info-badge" style="border-color:rgba(16,185,129,0.3);color:var(--dat);background:rgba(16,185,129,0.05)">${rs.type.replace(/_/g,' ')} ${Math.round(rs.amount*100)}%</span>`).join('');
+  c.innerHTML=`<div class="region-info"><div style="margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--text1)">${r.name}</div><div style="font-size:8px;color:${bm.accent};letter-spacing:1px;margin-top:2px">${bm.name.toUpperCase()} · ${r.coords.x},${r.coords.y},${r.coords.z}</div></div><div style="background:${bm.accent}10;border:1px solid ${bm.accent}30;border-radius:3px;padding:7px;margin-bottom:8px;font-size:8px;color:var(--text2);font-style:italic;line-height:1.6">"${bm.desc}"</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-bottom:8px"><div class="metric-box"><div class="metric-num" style="font-size:11px;color:${stabColor(r.stability)}">${fmtPctV(r.stability)}</div><div class="metric-lbl">Stability</div></div><div class="metric-box"><div class="metric-num" style="font-size:11px;color:${r.threat>0.6?'var(--danger)':'var(--warn)'}">${fmtPctV(r.threat)}</div><div class="metric-lbl">Threat</div></div><div class="metric-box"><div class="metric-num" style="font-size:9px;color:${r.discovered?'var(--dat)':'var(--text3)'}">${r.discovered?'KNOWN':'DARK'}</div><div class="metric-lbl">Status</div></div></div><div style="font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Resources</div><div style="margin-bottom:8px">${res}</div><div style="font-size:7px;color:var(--text3);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px">Entities (${r.entities.length})</div><div style="overflow-y:auto;max-height:160px">${ents}</div></div>`;
+}
+function renderEvents(){
+  const c=document.getElementById('event-list');if(!world||!world.events.length){c.innerHTML='<div style="font-size:8px;color:var(--text3);text-align:center;padding:10px">NO EVENTS</div>';return;}
+  setVal('evt-count',`${world.events.length} EVENTS`);
+  c.innerHTML=world.events.slice(0,12).map(e=>{const ago=timeAgo(e.ts);return`<div class="evt ${e.cls}"><div class="evt-msg">${e.msg}</div><div class="evt-meta">${e.sev} · ${ago}</div></div>`;}).join('');
+}
+function timeAgo(ts){const d=Date.now()-ts,m=Math.floor(d/60000),h=Math.floor(d/3600000);if(m<1)return'just now';if(m<60)return`${m}m ago`;if(h<24)return`${h}h ago`;return`${Math.floor(h/24)}d ago`;}
+function renderAll(){renderMetrics();renderBiomeFilters();renderSectors();renderDetail();renderEvents();}
+function buildWorld(seed){world=generateWorld(seed);selectedSector=null;biomeFilter='ALL';tick=0;setVal('h-tick',fmtTick(0));setVal('f-tick','TICK: '+fmtTick(0));document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));renderAll();}
+function regenWorld(){buildWorld(rndSeed())}
+function loadSeed(){const v=parseInt(document.getElementById('seed-input').value);if(!isNaN(v)&&v>0){buildWorld(v);document.getElementById('seed-input').value='';}}
+function loadPreset(seed,name){document.querySelectorAll('.preset-btn').forEach(b=>{b.classList.remove('active');if(b.textContent===name)b.classList.add('active')});buildWorld(seed);}
+function setSpeed(sp){simSpeed=sp;document.querySelectorAll('.speed-btn').forEach(b=>{b.classList.remove('active');if(b.textContent===sp+'x')b.classList.add('active')});if(running){stopSim();startSim();}}
+function startSim(){running=true;document.getElementById('btn-run').textContent='⏸ PAUSE';setVal('h-status','SIMULATING');simInterval=setInterval(()=>{tick++;setVal('h-tick',fmtTick(tick));setVal('f-tick','TICK: '+fmtTick(tick));if(!world)return;world.stats.processingLoad=Math.min(1,Math.max(0.1,world.stats.processingLoad+(Math.random()-0.5)*0.04));world.stats.memoryUsage=Math.min(1,Math.max(0.1,world.stats.memoryUsage+(Math.random()-0.5)*0.02));world.stats.latency=Math.max(1,world.stats.latency+Math.floor((Math.random()-0.5)*8));world.stats.corruptionLevel=Math.min(1,Math.max(0,world.stats.corruptionLevel+(Math.random()-0.52)*0.008));world.regions.forEach(r=>{r.stability=Math.min(1,Math.max(0,r.stability+(Math.random()-0.5)*0.015));r.entities.forEach(e=>{e.energy=Math.min(1,Math.max(0,e.energy+(Math.random()-0.42)*0.04));e.x=Math.min(100,Math.max(0,e.x+(Math.random()-0.5)*2));e.y=Math.min(100,Math.max(0,e.y+(Math.random()-0.5)*2));});});renderMetrics();if(selectedSector){selectedSector=world.regions.find(r=>r.id===selectedSector.id);renderDetail();}if(tick%5===0)renderSectors();},Math.round(1000/simSpeed));}
+function stopSim(){running=false;clearInterval(simInterval);document.getElementById('btn-run').textContent='▶ RUN';setVal('h-status','STANDBY');}
+function toggleSim(){if(running)stopSim();else startSim();}
+buildWorld(rndSeed());
+</script>
+</body>
+</html>
