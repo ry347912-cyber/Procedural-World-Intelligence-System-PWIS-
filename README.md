@@ -2,7 +2,11 @@
 
 > An advanced AI-powered procedural world generation and real-time intelligence simulation system built with React, Vite, Three.js, and Framer Motion.
 
-![PWIS Screenshot](https://placehold.co/1200x600/020408/00d4ff?text=PWIS+%E2%80%94+Procedural+World+Intelligence+System)
+<div align="center">
+<img src="home.png" alt="PWIS Home" width="49%"/> <img src="data.png" alt="Data Ocean" width="49%"/>
+<img src="neural.png" alt="Neural Forest" width="49%"/> <img src="corrupted.png" alt="Corrupted Zone" width="49%"/>
+<img src="cryatal.png" alt="Crystal Wastes" width="49%"/>
+</div>
 
 ---
 
