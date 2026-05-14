@@ -1,13 +1,17 @@
 # 🌐 Procedural World Intelligence System (PWIS)
 
 > An advanced AI-powered procedural world generation and real-time intelligence simulation system built with React, Vite, Three.js, and Framer Motion.
-
-<div align="center">
-<img src="home.png" alt="PWIS Home" width="49%"/> <img src="data.png" alt="Data Ocean" width="49%"/>
-<img src="neural.png" alt="Neural Forest" width="49%"/> <img src="corrupted.png" alt="Corrupted Zone" width="49%"/>
-<img src="cryatal.png" alt="Crystal Wastes" width="49%"/>
+ <div align="center">
+<img src="home.png" width="800"/>
+<br/><br/>
+<img src="data.png" width="800"/>
+<br/><br/>
+<img src="neural.png" width="800"/>
+<br/><br/>
+<img src="corrupted.png" width="800"/>
+<br/><br/>
+<img src="cryatal.png" width="800"/>
 </div>
-
 ---
 
 ## ✨ Features
